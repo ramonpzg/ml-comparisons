@@ -408,28 +408,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#import-packages" class="md-nav__link">
-    Import Packages
+  <a href="#serving-a-model-with-ray" class="md-nav__link">
+    Serving a Model with Ray
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#serving-a-model" class="md-nav__link">
-    Serving a Model
+  <a href="#serving-a-model-with-mlserver" class="md-nav__link">
+    Serving a Model with MLServer
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#file-name-serve_deploymentpy" class="md-nav__link">
-    File name: serve_deployment.py
-  </a>
   
 </li>
       
@@ -553,28 +546,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#import-packages" class="md-nav__link">
-    Import Packages
+  <a href="#serving-a-model-with-ray" class="md-nav__link">
+    Serving a Model with Ray
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#serving-a-model" class="md-nav__link">
-    Serving a Model
+  <a href="#serving-a-model-with-mlserver" class="md-nav__link">
+    Serving a Model with MLServer
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#file-name-serve_deploymentpy" class="md-nav__link">
-    File name: serve_deployment.py
-  </a>
   
 </li>
       
@@ -617,34 +603,11 @@ above.</p>
 </div>
 </div>
 </div>
-<h3 id="import-packages">Import Packages<a class="headerlink" href="#import-packages" title="Permanent link">&para;</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">MLServer</label><label for="__tabbed_2_2">Ray Serve</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">mlserver</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">serve</span>
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h3 id="serving-a-model">Serving a Model<a class="headerlink" href="#serving-a-model" title="Permanent link">&para;</a></h3>
-<p>With Ray you can create an app as a regular Python file and define a class 
-that will load your model and run inference with it. The class will get a <code>serve</code> decorator 
-to indicate ray what object in your Python file will become a service. </p>
-<p>```python</p>
-<h2 id="file-name-serve_deploymentpy">File name: serve_deployment.py<a class="headerlink" href="#file-name-serve_deploymentpy" title="Permanent link">&para;</a></h2>
-<p>from starlette.requests import Request
-from transformers import pipeline
-from ray import serve
-import ray</p>
-<p>@serve.deployment(num_replicas=2, ray_actor_options={"num_cpus": 0.2, "num_gpus": 0})
-class Translator:
-    def <strong>init</strong>(self):
-        # Load model
-        self.model = pipeline("translation_en_to_fr", model="t5-small")</p>
+<h3 id="serving-a-model-with-ray">Serving a Model with Ray<a class="headerlink" href="#serving-a-model-with-ray" title="Permanent link">&para;</a></h3>
+<p>With Ray you can create an app as a regular Python file and define a class that 
+will load your model and run inference with it. The class will get a <code>@serve</code> decorator 
+to indicate to ray what object in your Python file will become a service. Here is the 
+example found in the docs <a href="https://docs.ray.io/en/latest/serve/getting_started.html#converting-to-a-ray-serve-application">here</a>.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -656,21 +619,217 @@ class Translator:
 <span class="normal"> 9</span>
 <span class="normal">10</span>
 <span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>def translate(self, text: str) -&gt; str:
-    # Run inference
-    model_output = self.model(text)
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File name: serve_deployment.py</span>
+<span class="kn">from</span> <span class="nn">starlette.requests</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
+<span class="kn">from</span> <span class="nn">ray</span> <span class="kn">import</span> <span class="n">serve</span>
+<span class="kn">import</span> <span class="nn">ray</span>
 
-    # Post-process output to return only the translation text
-    translation = model_output[0][&quot;translation_text&quot;]
 
-    return translation
+<span class="nd">@serve</span><span class="o">.</span><span class="n">deployment</span><span class="p">(</span><span class="n">num_replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ray_actor_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;num_cpus&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;num_gpus&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="k">class</span> <span class="nc">Translator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Load model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;translation_en_to_fr&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;t5-small&quot;</span><span class="p">)</span>
 
-async def __call__(self, http_request: Request) -&gt; str:
-    english_text: str = await http_request.json()
-    return self.translate(english_text)
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Run inference</span>
+        <span class="n">model_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># Post-process output to return only the translation text</span>
+        <span class="n">translation</span> <span class="o">=</span> <span class="n">model_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;translation_text&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">translation</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">http_request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">english_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">http_request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">english_text</span><span class="p">)</span>
+
+
+<span class="n">translator_app</span> <span class="o">=</span> <span class="n">Translator</span><span class="o">.</span><span class="n">bind</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-<p>translator_app = Translator.bind()
-``</p>
+<p>Then you can serve the app with the following command. The thing to keep in mind is that, 
+unless the file containing your serving logic has been installed as a package in your development 
+environment, you will need to move into the directory containing the script so that ray can import 
+the class.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>serve<span class="w"> </span>run<span class="w"> </span>serve_quickstart:translator_app
+</code></pre></div></td></tr></table></div>
+<h3 id="serving-a-model-with-mlserver">Serving a Model with MLServer<a class="headerlink" href="#serving-a-model-with-mlserver" title="Permanent link">&para;</a></h3>
+<p>Following the <code>transformers</code> example of ray, MLServer has integrations with different frameworks 
+and the hugging face <code>transformers</code> library is certainly one of them. To create a hugging face model 
+to be served with MLServer, you can write a <code>model-settings.json</code> file and specify the pipeline you 
+are trying to create.</p>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="err">model</span><span class="mi">-</span><span class="err">se</span><span class="kc">tt</span><span class="err">i</span><span class="kc">n</span><span class="err">gs.jso</span><span class="kc">n</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;transformer&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;implementation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlserver_huggingface.HuggingFaceRuntime&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text-generation&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;pretrained_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;distilgpt2&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+If you want to have two replicas to match the ray example, you can add this to a <code>settings.json</code> as following.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="err">se</span><span class="kc">tt</span><span class="err">i</span><span class="kc">n</span><span class="err">gs.jso</span><span class="kc">n</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="err">parallel_workers</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Then you can run your model from your CLI using the following command.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>mlserver<span class="w"> </span>start<span class="w"> </span>.
+</code></pre></div></td></tr></table></div>
+<p>There are also custom ways to build hugging face models.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># my_summarizer.py</span>
+<span class="kn">from</span> <span class="nn">mlserver</span> <span class="kn">import</span> <span class="n">MLServer</span><span class="p">,</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">ModelSettings</span><span class="p">,</span> <span class="n">MLModel</span>
+<span class="kn">from</span> <span class="nn">mlserver.types</span> <span class="kn">import</span> <span class="n">InferenceResponse</span><span class="p">,</span> <span class="n">ResponseOutput</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
+
+<span class="k">class</span> <span class="nc">Summarizer</span><span class="p">(</span><span class="n">MLModel</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;summarization&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;t5-small&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">model_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">response_output</span> <span class="o">=</span> <span class="n">ResponseOutput</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;new_text&#39;</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;BYTES&#39;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">model_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;summary_text&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">InferenceResponse</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;test_model&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">response_output</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+<p>You will need to have the <code>model-settings.json</code> file available in the same directory.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="err">model</span><span class="mi">-</span><span class="err">se</span><span class="kc">tt</span><span class="err">i</span><span class="kc">n</span><span class="err">gs.jso</span><span class="kc">n</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_model&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;implementation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_summarizer.HuggingFaceRuntime&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Then you can run the server with your model using the mlserver cli.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>mlserver<span class="w"> </span>start<span class="w"> </span>.
+</code></pre></div></td></tr></table></div>
+<p>Lastly, you can also run mlserver as a Python file</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># my_summarizer.py</span>
+<span class="kn">from</span> <span class="nn">mlserver</span> <span class="kn">import</span> <span class="n">MLServer</span><span class="p">,</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">ModelSettings</span><span class="p">,</span> <span class="n">MLModel</span>
+<span class="kn">from</span> <span class="nn">mlserver.types</span> <span class="kn">import</span> <span class="n">InferenceResponse</span><span class="p">,</span> <span class="n">ResponseOutput</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">class</span> <span class="nc">Summarizer</span><span class="p">(</span><span class="n">MLModel</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;summarization&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;t5-small&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">model_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">response_output</span> <span class="o">=</span> <span class="n">ResponseOutput</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;new_text&#39;</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;BYTES&#39;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">model_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;summary_text&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">InferenceResponse</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;test_model&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">response_output</span><span class="p">])</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">my_server</span> <span class="o">=</span> <span class="n">MLServer</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">)</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">ModelSettings</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;awesome_model&#39;</span><span class="p">,</span> <span class="n">implementation</span><span class="o">=</span><span class="n">Summarizer</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">my_server</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">models_settings</span><span class="o">=</span><span class="p">[</span><span class="n">implementation</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+    <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+<p>You can run it with</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span> <span class="n">my_summarizer</span><span class="o">.</span><span class="n">py</span>
+</code></pre></div></td></tr></table></div>
 
 
 
